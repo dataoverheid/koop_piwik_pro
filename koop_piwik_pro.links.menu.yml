@@ -1,0 +1,19 @@
+koop_piwik_pro.piwik_pro:
+  title: 'Piwik PRO'
+  parent: system.admin_config_services
+  route_name: koop_piwik_pro.piwik_pro
+  description: 'Manage Piwik PRO settings.'
+
+koop_piwik_pro.piwik_pro.settings:
+  title: 'Piwik PRO settings'
+  parent: koop_piwik_pro.piwik_pro
+  route_name: koop_piwik_pro.piwik_pro.settings
+  description: 'Manage Piwik PRO settings.'
+  weight: 1
+
+koop_piwik_pro.piwik_pro.datalayer:
+  title: 'Piwik PRO DataLayer settings'
+  parent: koop_piwik_pro.piwik_pro
+  route_name: koop_piwik_pro.piwik_pro.datalayer
+  description: 'Manage Piwik PRO DataLayer settings.'
+  weight: 2

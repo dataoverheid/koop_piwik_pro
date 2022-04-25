@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains module hooks for koop_piwik_pro.
+ */
+
+use Drupal\Core\Render\Markup;
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Insert the sync snippet to the head if configured.
+ */
+function koop_piwik_pro_page_attachments(array &$attachments): void {
+  if (\Drupal::configFactory()->get('koop_piwik_pro.settings')->get('dataLayerEnabled')) {
+    /** @var \Drupal\koop_piwik_pro\SnippetServiceInterface $snippetService */
+    $snippetService = \Drupal::service('koop_piwik_pro.snippet');
+
+    $attachments['#attached']['html_head'][] = [
+      [
+        '#tag' => 'script',
+        '#attributes' => [
+          'type' => 'text/javascript',
+        ],
+        '#value' => Markup::create($snippetService->getDataLayerScript()),
+      ],
+    ];
+  }
+}
+
+/**
+ * Implements hook_page_top().
+ *
+ * Insert snippet to the appropriate scope/region of the page.
+ */
+function koop_piwik_pro_page_top(&$page): void {
+  /** @var \Drupal\koop_piwik_pro\SnippetServiceInterface $snippetService */
+  $snippetService = \Drupal::service('koop_piwik_pro.snippet');
+
+  $page['piwik_pro_snippet'] = [
+    '#type' => 'inline_template',
+    '#template' => '<script type="text/javascript">{{ snippet|raw }}</script>',
+    '#context' => [
+      'snippet' => $snippetService->getBodyScript(),
+    ],
+  ];
+}

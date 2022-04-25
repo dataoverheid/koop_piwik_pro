@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Contains install hooks for koop_piwik_pro.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function koop_piwik_pro_schema() {
+  $schema = [];
+
+  $schema['koop_piwik_pro_datalayer'] = [
+    'fields' => [
+      'route' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'handler' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => 'default',
+        'not null' => TRUE,
+      ],
+      'page_type' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => [
+      'route',
+    ],
+  ];
+
+  return $schema;
+}

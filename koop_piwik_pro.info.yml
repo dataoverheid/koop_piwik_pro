@@ -1,0 +1,12 @@
+name: KOOP Piwik PRO
+description: Module handeling the Piwik PRO implentation for KOOP sites
+package: koop
+
+type: module
+core_version_requirement: ^9
+configure: koop_piwik_pro.piwik_pro
+
+dependencies:
+  - drupsl:user
+
+version: '1.0.0'

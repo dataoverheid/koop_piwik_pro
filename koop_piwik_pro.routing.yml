@@ -1,0 +1,32 @@
+# Admin paths.
+koop_piwik_pro.piwik_pro:
+  path: '/admin/config/services/piwik_pro'
+  defaults:
+    _title: 'Piwik PRO'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'manage koop_piwik_pro settings'
+
+koop_piwik_pro.piwik_pro.settings:
+  path: '/admin/config/services/piwik_pro/settings'
+  defaults:
+    _form: '\Drupal\koop_piwik_pro\Form\SettingsForm'
+    _title: 'Piwik PRO settings'
+  requirements:
+    _permission: 'manage koop_piwik_pro settings'
+
+koop_piwik_pro.piwik_pro.datalayer:
+  path: '/admin/config/services/piwik_pro/datalayer'
+  defaults:
+    _form: '\Drupal\koop_piwik_pro\Form\DataLayerSettingsForm'
+    _title: 'Piwik PRO DataLayer'
+  requirements:
+    _permission: 'manage koop_piwik_pro settings'
+
+koop_piwik_pro.list_all_routes:
+  path: '/admin/config/services/piwik_pro/list_all_routes'
+  defaults:
+    _controller: '\Drupal\koop_piwik_pro\Controller\ListAllRoutesController::content'
+    _title: 'Available routes'
+  requirements:
+    _permission: 'manage koop_piwik_pro settings'
