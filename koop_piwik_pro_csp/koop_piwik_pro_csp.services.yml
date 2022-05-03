@@ -1,0 +1,8 @@
+services:
+  koop_piwik_pro_csp.alter:
+    class: Drupal\koop_piwik_pro_csp\EventSubscriber\CspAlterSubscriber
+    arguments:
+      - '@config.factory'
+      - '@koop_piwik_pro.snippet'
+    tags:
+      - { name: event_subscriber }

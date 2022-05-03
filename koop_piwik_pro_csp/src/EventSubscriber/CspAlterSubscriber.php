@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Drupal\koop_piwik_pro\EventSubscriber;
+namespace Drupal\koop_piwik_pro_csp\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;

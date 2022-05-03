@@ -1,0 +1,12 @@
+name: KOOP Piwik PRO CSP
+description: Integrate the Koop Piwik PRO module with the CSP module
+package: koop
+
+type: module
+core_version_requirement: ^9
+
+dependencies:
+  - csp:csp
+  - koop_piwik_pro:koop_piwik_pro
+
+version: '1.0.0'

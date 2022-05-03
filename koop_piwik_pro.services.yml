@@ -17,11 +17,3 @@ services:
     arguments:
       - '@config.factory'
       - '@koop_piwik_pro.datalayer'
-
-  koop_piwik_pro.csp_alter:
-    class: Drupal\koop_piwik_pro\EventSubscriber\CspAlterSubscriber
-    arguments:
-      - '@config.factory'
-      - '@koop_piwik_pro.snippet'
-    tags:
-      - { name: event_subscriber }
