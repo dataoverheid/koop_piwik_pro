@@ -83,8 +83,17 @@ class CspAlterSubscriber implements EventSubscriberInterface {
     $hashes[] = "'sha256-" . base64_encode(hash('sha256', $this->snippetService->getBodyScript(), TRUE)) . "'";
     $hashes[] = "'sha256-" . base64_encode(hash('sha256', $this->snippetService->getDataLayerScript(), TRUE)) . "'";
     $hash = implode(' ', $hashes);
-    $policy->appendDirective('script-src', $hash);
-    $policy->appendDirective('style-src', $hash);
+
+    $directives = [
+      'script-src',
+      'style-src',
+    ];
+    foreach ($directives as $name) {
+      $directive = $policy->getDirective($name);
+      if (!$directive || !in_array("'unsafe-inline'", $directive)) {
+        $policy->appendDirective($name, $hash);
+      }
+    }
   }
 
 }

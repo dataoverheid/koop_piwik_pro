@@ -93,8 +93,12 @@ class DataLayerService implements DataLayerServiceInterface {
     $this->config = $configFactory->get('koop_piwik_pro.settings');
     $this->currentLanguage = $languageManager->getCurrentLanguage();
     $this->routeMatch = $routeMatch;
-    $title = $titleResolver->getTitle($requestStack->getCurrentRequest(), $routeMatch->getRouteObject());
-    $this->pageTitle = (string) (is_array($title) ? $renderer->renderPlain($title) : $title);
+
+    $this->pageTitle = '';
+    if (($request = $requestStack->getCurrentRequest()) && ($route = $routeMatch->getRouteObject())) {
+      $title = $titleResolver->getTitle($request, $route);
+      $this->pageTitle = (string) (is_array($title) ? $renderer->renderPlain($title) : $title);
+    }
   }
 
   /**

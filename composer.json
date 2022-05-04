@@ -1,0 +1,10 @@
+{
+    "name": "dataoverheid/koop_piwik_pro",
+    "description": "Module handeling the Piwik PRO implentation for KOOP sites",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=7.4",
+        "drupal/core": "^9"
+    }
+}
