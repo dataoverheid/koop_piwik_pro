@@ -103,7 +103,7 @@ class SettingsForm extends ConfigFormBase {
     $config->set('site_name', $form_state->getValue('site_name'));
     $config->set('site_environment', $form_state->getValue('site_environment'));
     $domain = $form_state->getValue('domain');
-    if (substr($domain, 0, -1) !== '/') {
+    if (substr($domain, strlen($domain) -1) !== '/') {
       $domain .= '/';
     }
     $config->set('domain', $domain);

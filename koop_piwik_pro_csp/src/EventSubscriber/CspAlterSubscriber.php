@@ -73,10 +73,21 @@ class CspAlterSubscriber implements EventSubscriberInterface {
       'style-src',
     ];
     foreach ($directives as $name) {
-      if (empty($policy->getDirective($name))) {
+      if (!$policy->hasDirective($name)) {
         $policy->appendDirective($name, "'self'");
       }
       $policy->appendDirective($name, $baseDomain);
+    }
+
+    // Add the base url to all optional directives.
+    $optionalDirectives = [
+      'script-src-elem',
+      'style-src-elem',
+    ];
+    foreach ($optionalDirectives as $name) {
+      if ($policy->hasDirective($name)) {
+        $policy->appendDirective($name, $baseDomain);
+      }
     }
 
     // Add the hashes.
@@ -89,7 +100,7 @@ class CspAlterSubscriber implements EventSubscriberInterface {
       'style-src',
     ];
     foreach ($directives as $name) {
-      $directive = $policy->getDirective($name);
+      $directive = $policy->hasDirective($name) ? $policy->getDirective($name) : [];
       if (!$directive || !in_array("'unsafe-inline'", $directive)) {
         $policy->appendDirective($name, $hash);
       }
