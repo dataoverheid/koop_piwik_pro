@@ -93,7 +93,8 @@ class CspAlterSubscriber implements EventSubscriberInterface {
     // Add the hashes.
     $hashes[] = "'sha256-" . base64_encode(hash('sha256', $this->snippetService->getBodyScript(), TRUE)) . "'";
     $hashes[] = "'sha256-" . base64_encode(hash('sha256', $this->snippetService->getDataLayerScript(), TRUE)) . "'";
-    $hash = implode(' ', $hashes);
+    $this->getExternalHashes($hashes);
+    $hash = implode(' ',$hashes);
 
     $directives = [
       'script-src',
@@ -103,6 +104,44 @@ class CspAlterSubscriber implements EventSubscriberInterface {
       $directive = $policy->hasDirective($name) ? $policy->getDirective($name) : [];
       if (!$directive || !in_array("'unsafe-inline'", $directive)) {
         $policy->appendDirective($name, $hash);
+      }
+    }
+
+    // Add the hashes to all optional directives.
+    $optionalDirectives = [
+      'script-src-elem',
+      'style-src-elem',
+    ];
+    foreach ($optionalDirectives as $name) {
+      $directive = $policy->hasDirective($name) ? $policy->getDirective($name) : [];
+      if ($directive && !in_array("'unsafe-inline'", $directive)) {
+        $policy->appendDirective($name, $hash);
+      }
+    }
+  }
+
+  /**
+   * Get the hashes of the script tag that Piwik PRO injects.
+   *
+   * @param array $hashes
+   *   An array with the current hashes.
+   */
+  private function getExternalHashes(array &$hashes): void {
+    if ($url = $this->config->get('domain') . $this->config->get('id') . '.js') {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $url);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt($ch, CURLOPT_TRANSFERTEXT, TRUE);
+      $data = curl_exec($ch);
+      curl_close($ch);
+
+      $matches = [];
+      preg_match_all('/"code":"<script.*?>(.*?)<\/script>/', $data, $matches);
+
+      foreach ($matches[1] as $v) {
+        $v = str_replace('\\\\', '\\', $v);
+        $v = str_replace('\n', "\n", $v);
+        $hashes[] = "'sha256-" . base64_encode(hash('sha256', $v, TRUE)) . "'";
       }
     }
   }
