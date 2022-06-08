@@ -10,19 +10,35 @@ namespace Drupal\koop_piwik_pro;
 interface SnippetServiceInterface {
 
   /**
-   * Get the Piwik Pro body script.
+   * Get the Piwik PRO body script.
    *
    * @return string
-   *   The JavaScript withouth script tag.
+   *   The JavaScript without script tag.
    */
   public function getBodyScript(): string;
 
   /**
-   * Get the Piwik Pro dataLayer push script.
+   * Get the Piwik PRO dataLayer push script.
    *
    * @return string
-   *   The JavaScript withouth script tag.
+   *   The JavaScript without script tag.
    */
   public function getDataLayerScript(): string;
+
+  /**
+   * Get the nonce.
+   *
+   * @return string
+   *   The nonce.
+   */
+  public function getNonce(): string;
+
+  /**
+   * Should the Piwik PRO code be added to this page.
+   *
+   * @return bool
+   *   Whether the code should be added or not.
+   */
+  public function getVisibilityForPage(): bool;
 
 }

@@ -6,6 +6,9 @@ namespace Drupal\koop_piwik_pro;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Path\CurrentPathStack;
+use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\path_alias\AliasManagerInterface;
 
 /**
  * Service for creating the Piwik PRO JavaScript snippets.
@@ -23,16 +26,40 @@ class SnippetService implements SnippetServiceInterface {
   private DataLayerServiceInterface $dataLayerService;
 
   /**
+   * The alias manager service.
+   */
+  private AliasManagerInterface $aliasManager;
+
+  /**
+   * The path matcher service.
+   */
+  private PathMatcherInterface $pathMatcher;
+
+  /**
+   * The current path service.
+   */
+  private CurrentPathStack $currentPath;
+
+  /**
    * Constructs a SnippetService object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    *   The config factory service.
    * @param \Drupal\koop_piwik_pro\DataLayerServiceInterface $dataLayerService
    *   The dataLayer service.
+   * @param \Drupal\path_alias\AliasManagerInterface $aliasManager
+   *   The alias manager service.
+   * @param \Drupal\Core\Path\PathMatcherInterface $pathMatcher
+   *   The path matcher service.
+   * @param \Drupal\Core\Path\CurrentPathStack $currentPath
+   *   The current path service.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, DataLayerServiceInterface $dataLayerService) {
+  public function __construct(ConfigFactoryInterface $configFactory, DataLayerServiceInterface $dataLayerService, AliasManagerInterface $aliasManager, PathMatcherInterface $pathMatcher, CurrentPathStack $currentPath) {
     $this->config = $configFactory->get('koop_piwik_pro.settings');
     $this->dataLayerService = $dataLayerService;
+    $this->aliasManager = $aliasManager;
+    $this->pathMatcher = $pathMatcher;
+    $this->currentPath = $currentPath;
   }
 
   /**
@@ -58,6 +85,46 @@ class SnippetService implements SnippetServiceInterface {
       $this->config->get('dataLayerName'),
       json_encode($this->dataLayerService->getValues()),
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getNonce(): string {
+    $nonce = &drupal_static(__FUNCTION__);
+    if (!$nonce) {
+      $string = '';
+      for ($i = 0; $i < 16; $i++) {
+        $string .= chr(mt_rand(0, 255));
+      }
+      $nonce = hash('sha256', $string);
+    }
+
+    return $nonce;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getVisibilityForPage(): bool {
+    $pageMatch = &drupal_static(__FUNCTION__);
+    if (!$pageMatch) {
+      $pageMatch = FALSE;
+      $visibilityMode = $this->config->get('visibility_mode');
+
+      if ($visibilityPages = $this->config->get('visibility_pages')) {
+        $pages = mb_strtolower($visibilityPages);
+
+        if ($visibilityMode < 2) {
+          $path = $this->currentPath->getPath();
+          $pathAlias = mb_strtolower($this->aliasManager->getAliasByPath($path));
+          $pageMatch = $this->pathMatcher->matchPath($pathAlias, $pages) || (($path != $pathAlias) && $this->pathMatcher->matchPath($path, $pages));
+          $pageMatch = !($visibilityMode xor $pageMatch);
+        }
+      }
+    }
+
+    return $pageMatch;
   }
 
 }

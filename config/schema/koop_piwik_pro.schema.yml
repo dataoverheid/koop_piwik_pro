@@ -1,0 +1,28 @@
+koop_piwik_pro.settings:
+  type: config_object
+  label: 'Koop Piwik PRO settings'
+  mapping:
+    site_name:
+      type: string
+      label: 'Site name'
+    site_environment:
+      type: string
+      label: 'DTAP Environment'
+    domain:
+      type: string
+      label: 'Domain'
+    id:
+      type: string
+      label: 'Piwik ID'
+    dataLayerName:
+      type: string
+      label: 'Datalayer name'
+    dataLayerEnabled:
+      type: boolean
+      label: 'Enable DataLayers'
+    visibility_mode:
+      type: integer
+      label: 'Add tracking to specific pages'
+    visibility_pages:
+      type: string
+      label: 'Pages by their paths'

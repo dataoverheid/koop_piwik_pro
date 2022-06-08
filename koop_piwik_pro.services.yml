@@ -17,3 +17,6 @@ services:
     arguments:
       - '@config.factory'
       - '@koop_piwik_pro.datalayer'
+      - '@path_alias.manager'
+      - '@path.matcher'
+      - '@path.current'
