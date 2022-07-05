@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Drupal\koop_piwik_pro\Form;
 
-use Composer\Installers\PPIInstaller;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 

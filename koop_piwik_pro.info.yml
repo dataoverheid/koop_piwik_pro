@@ -9,4 +9,4 @@ configure: koop_piwik_pro.piwik_pro
 dependencies:
   - drupsl:user
 
-version: '1.0.0'
+version: '1.2.1'

@@ -27,6 +27,7 @@ function koop_piwik_pro_page_attachments(array &$attachments): void {
           ],
           '#value' => Markup::create($snippetService->getDataLayerScript()),
         ],
+        'koop_piwik_pro_datalayers',
       ];
     }
   }
