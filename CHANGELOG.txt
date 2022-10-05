@@ -1,3 +1,8 @@
+1.2.2,   2022-10-05
+-----------------------
+- Added fallback to settins so upgrading from 1.1.x to 1.2.x doesn't
+  automatically disable Piwik PRO.
+
 1.2.1,   2022-07-05
 -----------------------
 - Fixed PHP Notice that occured when DataLayers was enabled.

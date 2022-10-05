@@ -109,10 +109,11 @@ class SnippetService implements SnippetServiceInterface {
   public function getVisibilityForPage(): bool {
     $pageMatch = &drupal_static(__FUNCTION__);
     if (!$pageMatch) {
-      $visibilityMode = $this->config->get('visibility_mode');
-      $pageMatch = $visibilityMode === 0;
+      $visibilityPages = $this->config->get('visibility_pages') ?? '';
+      $visibilityMode = $this->config->get('visibility_mode') ?? 0;
 
-      if ($visibilityPages = $this->config->get('visibility_pages')) {
+      $pageMatch = $visibilityMode === 0;
+      if ($visibilityPages) {
         $pages = mb_strtolower($visibilityPages);
 
         if ($visibilityMode < 2) {
