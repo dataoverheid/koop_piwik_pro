@@ -8,7 +8,7 @@
 /**
  * Implements hook_schema().
  */
-function koop_piwik_pro_schema() {
+function koop_piwik_pro_schema(): array {
   $schema = [];
 
   $schema['koop_piwik_pro_datalayer'] = [

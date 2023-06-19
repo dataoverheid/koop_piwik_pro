@@ -85,7 +85,7 @@ class DataLayerService implements DataLayerServiceInterface {
     try {
       $this->currentUser = $entityTypeManager->getStorage('user')->load($accountProxy->id());
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       $this->currentUser = NULL;
     }
 

@@ -147,7 +147,7 @@ class SettingsForm extends ConfigFormBase {
       // Verify that every path is prefixed with a slash.
       $wrongPages = [];
       foreach (preg_split('/(\r\n?|\n)/', $visibilityPages) as $page) {
-        if (strpos($page, '/') !== 0 && $page !== '<front>') {
+        if (!str_starts_with($page, '/') && $page !== '<front>') {
           $wrongPages[] = $page;
         }
       }
@@ -170,7 +170,7 @@ class SettingsForm extends ConfigFormBase {
     $config->set('site_name', $form_state->getValue('site_name'));
     $config->set('site_environment', $form_state->getValue('site_environment'));
     $domain = $form_state->getValue('domain');
-    if (substr($domain, strlen($domain) -1) !== '/') {
+    if (!str_ends_with($domain, '/')) {
       $domain .= '/';
     }
     $config->set('domain', $domain);

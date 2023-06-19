@@ -90,7 +90,7 @@ class ListAllRoutesController extends ControllerBase {
     foreach ($this->routeProvider->getAllRoutes() as $k => $v) {
       $path = $v->getPath();
       // Ignore all admin paths and some specific routes.
-      if (strpos($path, '/admin/') !== 0 && !preg_match('/^(' . implode(')|(', $ignoreRoutes) . ')$/', $k)) {
+      if (!str_starts_with($path, '/admin/') && !preg_match('/^(' . implode(')|(', $ignoreRoutes) . ')$/', $k)) {
         $rows[$k] = [NULL, $k, $path];
       }
     }
