@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Contains install hooks for koop_piwik_pro_csp.
+ */
+
+/**
+* Implements hook_install().
+*/
+function koop_piwik_pro_csp_install() {
+  // Assign a weight higher than paragraphs to ensure the CspAlterSubscriber
+  // runs after paragraphs has set all its headers.
+  module_set_weight('koop_piwik_pro_csp', 12);
+}
+
+/**
+ * Assign a higher module weight to prevent CSP header conflicts.
+ */
+function koop_piwik_pro_csp_update_10001() {
+  module_set_weight('koop_piwik_pro_csp', 12);
+}
