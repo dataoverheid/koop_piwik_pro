@@ -8,6 +8,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\Core\Routing\AdminContext;
 use Drupal\path_alias\AliasManagerInterface;
 
 /**
@@ -41,6 +42,11 @@ class SnippetService implements SnippetServiceInterface {
   private CurrentPathStack $currentPath;
 
   /**
+   * The admin context service.
+   */
+  private AdminContext $adminContext;
+
+  /**
    * Constructs a SnippetService object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
@@ -53,13 +59,16 @@ class SnippetService implements SnippetServiceInterface {
    *   The path matcher service.
    * @param \Drupal\Core\Path\CurrentPathStack $currentPath
    *   The current path service.
+   * @param \Drupal\Core\Routing\AdminContext $adminContext
+   *   The admin context service.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, DataLayerServiceInterface $dataLayerService, AliasManagerInterface $aliasManager, PathMatcherInterface $pathMatcher, CurrentPathStack $currentPath) {
+  public function __construct(ConfigFactoryInterface $configFactory, DataLayerServiceInterface $dataLayerService, AliasManagerInterface $aliasManager, PathMatcherInterface $pathMatcher, CurrentPathStack $currentPath, AdminContext $adminContext) {
     $this->config = $configFactory->get('koop_piwik_pro.settings');
     $this->dataLayerService = $dataLayerService;
     $this->aliasManager = $aliasManager;
     $this->pathMatcher = $pathMatcher;
     $this->currentPath = $currentPath;
+    $this->adminContext = $adminContext;
   }
 
   /**
@@ -108,20 +117,25 @@ class SnippetService implements SnippetServiceInterface {
    */
   public function getVisibilityForPage(): bool {
     $pageMatch = &drupal_static(__FUNCTION__);
-    if (!$pageMatch) {
-      $visibilityPages = $this->config->get('visibility_pages') ?? '';
-      $visibilityMode = $this->config->get('visibility_mode') ?? 0;
+    if ($pageMatch !== NULL) {
+      return $pageMatch;
+    }
 
-      $pageMatch = $visibilityMode === 0;
-      if ($visibilityPages) {
-        $pages = mb_strtolower($visibilityPages);
+    if ($this->config->get('visibility_disable_admin_pages') && $this->adminContext->isAdminRoute()) {
+      return $pageMatch = FALSE;
+    }
 
-        if ($visibilityMode < 2) {
-          $path = $this->currentPath->getPath();
-          $pathAlias = mb_strtolower($this->aliasManager->getAliasByPath($path));
-          $pageMatch = $this->pathMatcher->matchPath($pathAlias, $pages) || (($path != $pathAlias) && $this->pathMatcher->matchPath($path, $pages));
-          $pageMatch = !($visibilityMode xor $pageMatch);
-        }
+    $visibilityMode = $this->config->get('visibility_mode') ?? 0;
+    $pageMatch = $visibilityMode === 0;
+
+    if ($visibilityPages = $this->config->get('visibility_pages') ?? '') {
+      $pages = mb_strtolower($visibilityPages);
+
+      if ($visibilityMode < 2) {
+        $path = $this->currentPath->getPath();
+        $pathAlias = mb_strtolower($this->aliasManager->getAliasByPath($path));
+        $pageMatch = $this->pathMatcher->matchPath($pathAlias, $pages) || (($path != $pathAlias) && $this->pathMatcher->matchPath($path, $pages));
+        $pageMatch = !($visibilityMode xor $pageMatch);
       }
     }
 

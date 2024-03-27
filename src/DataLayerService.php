@@ -15,6 +15,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
@@ -49,14 +50,24 @@ class DataLayerService implements DataLayerServiceInterface {
   private SessionInterface $session;
 
   /**
+   * The current request.
+   */
+  private Request $currentRequest;
+
+  /**
    * The route match.
    */
   private RouteMatchInterface $routeMatch;
 
   /**
-   * The page title.
+   * The title resolver.
    */
-  private string $pageTitle;
+  private TitleResolverInterface $titleResolver;
+
+  /**
+   * The renderer.
+   */
+  private RendererInterface $renderer;
 
   /**
    * Constructs a DataLayerService object.
@@ -92,13 +103,10 @@ class DataLayerService implements DataLayerServiceInterface {
     $this->connection = $connection;
     $this->config = $configFactory->get('koop_piwik_pro.settings');
     $this->currentLanguage = $languageManager->getCurrentLanguage();
+    $this->currentRequest = $requestStack->getCurrentRequest();
     $this->routeMatch = $routeMatch;
-
-    $this->pageTitle = '';
-    if (($request = $requestStack->getCurrentRequest()) && ($route = $routeMatch->getRouteObject())) {
-      $title = $titleResolver->getTitle($request, $route);
-      $this->pageTitle = (string) (is_array($title) ? $renderer->renderPlain($title) : $title);
-    }
+    $this->titleResolver = $titleResolver;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -110,7 +118,7 @@ class DataLayerService implements DataLayerServiceInterface {
     $values = [
       'site_name' => $this->config->get('site_name'),
       'site_env' => $this->config->get('site_environment'),
-      'page_title' => $this->pageTitle,
+      'page_title' => $this->getPageTitle(),
       'page_type' => $settings['page_type'],
       'page_language' => $this->currentLanguage->getId(),
       'user_type' => $this->getUserType(),
@@ -133,20 +141,22 @@ class DataLayerService implements DataLayerServiceInterface {
    *   The user type.
    */
   private function getUserType(): string {
-    if ($this->currentUser && $this->currentUser->id() > 0) {
-      if ($this->currentUser->id() === 1 || $this->currentUser->hasRole('administrator')) {
-        return 'admin';
-      }
-      return 'user';
+    if (!$this->currentUser || $this->currentUser->id() === 0) {
+      return 'anonymous';
     }
-    return 'anonymous';
+
+    if ($this->currentUser->id() === 1 || $this->currentUser->hasRole('administrator')) {
+      return 'admin';
+    }
+
+    return 'user';
   }
 
   /**
    * Get the page type.
    *
    * @return array
-   *   Array containig the page type and handler.
+   *   Array containing the page type and handler.
    */
   private function getPageType(): array {
     $routeName = explode('.', $this->routeMatch->getRouteName());
@@ -183,6 +193,20 @@ class DataLayerService implements DataLayerServiceInterface {
       'page_type' => 'undefined',
       'handler' => 'default',
     ];
+  }
+
+  /**
+   * Get the page title.
+   *
+   * @return string
+   *   The page title.
+   */
+  private function getPageTitle(): string {
+    if ($route = $this->routeMatch->getRouteObject()) {
+      $title = $this->titleResolver->getTitle($this->currentRequest, $route);
+      return (string) (is_array($title) ? $this->renderer->renderPlain($title) : $title);
+    }
+    return '';
   }
 
 }

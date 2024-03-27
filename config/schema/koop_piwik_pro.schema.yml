@@ -20,6 +20,9 @@ koop_piwik_pro.settings:
     dataLayerEnabled:
       type: boolean
       label: 'Enable DataLayers'
+    visibility_disable_admin_pages:
+      type: boolean
+      label: 'Whether Piwik should be disabled on admin pages'
     visibility_mode:
       type: integer
       label: 'Add tracking to specific pages'

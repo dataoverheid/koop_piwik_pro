@@ -89,7 +89,7 @@ class SettingsForm extends ConfigFormBase {
     $form['piwik_pro']['dataLayerEnabled'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable DataLayers'),
-      '#default_value' => $config->get('dataLayerEnabled'),
+      '#default_value' => $config->get('dataLayerEnabled') ?? FALSE,
     ];
 
     $form['visibility'] = [
@@ -97,6 +97,12 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('What pages to track'),
       '#open' => TRUE,
       '#required' => TRUE,
+    ];
+
+    $form['visibility']['visibility_disable_admin_pages'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Disable on admin pages.'),
+      '#default_value' => $config->get('visibility_disable_admin_pages') ?? FALSE,
     ];
 
     $form['visibility']['visibility_mode'] = [
@@ -125,7 +131,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state): void {
     parent::validateForm($form, $form_state);
 
     // Validate URL.
@@ -177,6 +183,7 @@ class SettingsForm extends ConfigFormBase {
     $config->set('id', $form_state->getValue('id'));
     $config->set('dataLayerName', $form_state->getValue('dataLayerName'));
     $config->set('dataLayerEnabled', $form_state->getValue('dataLayerEnabled'));
+    $config->set('visibility_disable_admin_pages', $form_state->getValue('visibility_disable_admin_pages'));
     $config->set('visibility_mode', $form_state->getValue('visibility_mode'));
     $config->set('visibility_pages', $form_state->getValue('visibility_pages'));
     $config->save();

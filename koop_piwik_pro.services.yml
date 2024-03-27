@@ -20,3 +20,4 @@ services:
       - '@path_alias.manager'
       - '@path.matcher'
       - '@path.current'
+      - '@router.admin_context'
